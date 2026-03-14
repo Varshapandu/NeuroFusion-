@@ -271,22 +271,16 @@ def start_fl_server(num_rounds=None, server_address=None):
     print(f"  Rounds: {rounds}")
     print(f"  Address: {addr}")
     print(f"  Clients per round: {CLIENTS_PER_ROUND}")
+    print(f"  Total clients: {TOTAL_CLIENTS}")
     print(f"{'='*60}\n")
     
-    # strategy = DashboardFedAvg(
-    #     fraction_fit=CLIENTS_PER_ROUND / TOTAL_CLIENTS,
-    #     min_fit_clients=CLIENTS_PER_ROUND,
-    #     min_available_clients=TOTAL_CLIENTS,
-    #     total_clients=TOTAL_CLIENTS,
-    #     clients_per_round=CLIENTS_PER_ROUND,
-    #     delta=DELTA,
-    # )
+    # ✅ MULTI-CLIENT CONFIGURATION (uses config values)
     strategy = DashboardFedAvg(
-        fraction_fit=1.0,  # use the single available client
-        min_fit_clients=1,  #  allow 1 client
-        min_available_clients=1,  #  allow server to start
-        total_clients=1,  # match reality
-        clients_per_round=1,  # match reality
+        fraction_fit=CLIENTS_PER_ROUND / TOTAL_CLIENTS,
+        min_fit_clients=CLIENTS_PER_ROUND,
+        min_available_clients=CLIENTS_PER_ROUND,  # Allow server to start with minimum clients
+        total_clients=TOTAL_CLIENTS,
+        clients_per_round=CLIENTS_PER_ROUND,
         delta=DELTA,
     )
 

@@ -26,8 +26,8 @@ LR = float(os.environ.get("LR", 1e-4))
 
 # Federated settings
 NUM_ROUNDS = int(os.environ.get("NUM_ROUNDS", 3))
-CLIENTS_PER_ROUND = int(os.environ.get("CLIENTS_PER_ROUND", 1))
-TOTAL_CLIENTS = int(os.environ.get("TOTAL_CLIENTS", 1))
+CLIENTS_PER_ROUND = int(os.environ.get("CLIENTS_PER_ROUND", 2))  # ✅ Changed to 2
+TOTAL_CLIENTS = int(os.environ.get("TOTAL_CLIENTS", 2))           # ✅ Changed to 2
 
 # FedProx + Update-level DP defaults (tunable)
 FEDPROX_MU = float(os.environ.get("FEDPROX_MU", 1e-3))
