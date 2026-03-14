@@ -22,6 +22,7 @@ print("ROOT_DIR = ", ROOT_DIR)
 # Standard libs
 import numpy as np
 import pandas as pd
+import time
 from tqdm import tqdm
 
 # PyTorch & Flower
@@ -177,9 +178,30 @@ def _local_train_fedprox(
     local_epochs,
 ):
     model.train()
+    
+    import socket
+    import requests
+    node_id = socket.gethostname()
+    last_hb = time.time()  # Track heartbeat timing
 
     for epoch in range(local_epochs):
         for batch_idx, batch in enumerate(tqdm(loader, desc="Local Training", leave=False)):
+            
+            # 📡 SEND HEARTBEAT EVERY 30 BATCHES (keep alive during training)
+            now = time.time()
+            if now - last_hb > 10:  # Heartbeat every 10 seconds
+                try:
+                    requests.post(
+                        "http://127.0.0.1:5000/api/fl/node_heartbeat",
+                        json={
+                            "node_id": node_id,
+                            "status": "training"
+                        },
+                        timeout=2
+                    )
+                    last_hb = now
+                except:
+                    pass
 
             # ---------------- UI progress update ----------------
             if batch_idx % 10 == 0:

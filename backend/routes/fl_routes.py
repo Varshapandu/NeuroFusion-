@@ -376,6 +376,19 @@ def load_state():
             with open(STATE_FILE, "r") as f:
                 FL_STATE.update(json.load(f))
             print("[STATE] FL_STATE restored from disk")
+            
+            # 🧹 CLEAN OLD OFFLINE NODES (older than 10 minutes)
+            now = time.time()
+            expired_nodes = []
+            for node_id, node in FL_STATE["nodes"].items():
+                last_seen = node.get("last_seen", 0)
+                # Remove if offline AND not seen for more than 10 minutes
+                if node.get("status") == "offline" and (now - last_seen) > 600:
+                    expired_nodes.append(node_id)
+            
+            for node_id in expired_nodes:
+                del FL_STATE["nodes"][node_id]
+                print(f"[CLEANUP] Removed old offline node: {node_id}")
     except Exception as e:
         print("[STATE LOAD ERROR]", e)
 
@@ -385,7 +398,7 @@ load_state()
 # GLOBALS
 # -----------------------------
 _FL_LOCK = threading.Lock()
-NODE_OFFLINE_THRESHOLD = 120  # seconds
+NODE_OFFLINE_THRESHOLD = 60  # seconds (reduced from 120)
 
 # -----------------------------
 # HELPERS
@@ -440,19 +453,22 @@ def fl_status_dashboard():
     save_state()
 
     with _FL_LOCK:
+        # 📊 Filter to show only ONLINE/TRAINING nodes (exclude offline)
+        online_nodes = [
+            n for n in FL_STATE["nodes"].values()
+            if n.get("status") in ["online", "training", "idle"]
+        ]
+        
         response = {
             "global_round": FL_STATE["global_round"],
             "current_round": FL_STATE["current_round"],
             "round_running": FL_STATE["round_running"],
             "last_aggregation": FL_STATE["last_aggregation"],
-            "nodes": list(FL_STATE["nodes"].values()),
+            "nodes": online_nodes,
             "metrics": FL_STATE["metrics"],
             "metrics_history": FL_STATE["metrics_history"],
             "training_progress": FL_STATE["training_progress"],
-            "connected_nodes": sum(
-                1 for n in FL_STATE["nodes"].values()
-                if n.get("status") != "offline"
-            ),
+            "connected_nodes": len(online_nodes),  # Only count ONLINE nodes
         }
 
     return jsonify(response), 200
