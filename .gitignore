@@ -1,33 +1,63 @@
+# Environment & Secrets (CRITICAL!)
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Virtual Environments
 .venv/
+venv/
+ENV/
 brain310/
 Scripts/
-node_modules/
-__pycache__/
-.pytest_cache/
-.mypy_cache/
 
+# IDEs
 .idea/
 .vscode/
 
-checkpoints/
-models/
-outputs/
-backend/logs/
-backend/backend/logs/
-
-Dataset/
-edf/
-
+# Python
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.log
-*.tmp
+*.egg-info/
+dist/
+build/
+
+# Node modules (for neurodash/neurofusion frontends)
+node_modules/
+package-lock.json
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+.coverage
+
+# Large Files (Training data)
+checkpoints/
+models/
+outputs/
+logs/
+backend/logs/
+backend/backend/logs/
+
+# Model & Data Files
 *.pt
 *.pth
 *.ckpt
 *.npz
 *.parquet
+*.log
+*.tmp
 
+# Datasets
+Dataset/
+edf/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Other
 fl_state.json
 Dataset - Shortcut.lnk
