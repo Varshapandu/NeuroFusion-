@@ -1,0 +1,10 @@
+dataset:
+  sample_rate: 200.0
+  window: 1000
+  step: 500
+  n_fft: 128
+  hop_length: 32
+
+precompute:
+  use_gpu: true
+  num_workers: 4

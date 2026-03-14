@@ -1,0 +1,282 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>NeuroFusion</title>-->
+<!--    <style>-->
+<!--        /* Full background */-->
+<!--.landing {-->
+<!--    background: url("background.png") no-repeat center center / cover;-->
+<!--    background-color: #0c0017; /* dark fallback to remove white edges */-->
+<!--    height: 100vh;-->
+<!--    width: 100%;-->
+<!--    position: relative;-->
+<!--    overflow: hidden;-->
+<!--}-->
+
+<!--/* NEUROFUSION text placement */-->
+<!--.text-box {-->
+<!--    position: absolute;-->
+<!--    top: 33%;-->
+<!--    left: 47%;-->
+<!--    transform: translateX(-10%);-->
+<!--}-->
+
+<!--.text-box h1 {-->
+<!--    color: white;-->
+<!--    font-size: 72px;-->
+<!--    font-weight: 900;-->
+<!--    letter-spacing: 2px;-->
+<!--    text-shadow: 0 0 25px rgba(255, 255, 255, 0.6);-->
+<!--}-->
+
+<!--.text-box p {-->
+<!--    margin-top: 18px;-->
+<!--    font-size: 26px;-->
+<!--    line-height: 1.4;-->
+<!--    color: #ff00dd;-->
+<!--    text-shadow: 0 0 25px rgba(255, 0, 221, 0.7);-->
+<!--    font-weight: 500;-->
+<!--}-->
+
+<!--/* Neon dashboard button */-->
+<!--.dash-btn {-->
+<!--    position: absolute;-->
+<!--    bottom: 18%;-->
+<!--    right: 15%;-->
+<!--    padding: 15px 40px;-->
+<!--    font-size: 22px;-->
+<!--    border-radius: 14px;-->
+<!--    border: 2px solid #ff00dd;-->
+<!--    background: transparent;-->
+<!--    color: white;-->
+<!--    cursor: pointer;-->
+<!--    box-shadow: 0 0 20px #ff00dd;-->
+<!--    transition: 0.25s ease;-->
+<!--}-->
+
+<!--.dash-btn:hover {-->
+<!--    box-shadow: 0 0 35px #ff00dd;-->
+<!--    background: rgba(255, 0, 221, 0.2);-->
+<!--}-->
+
+<!--    </style>-->
+<!--</head>-->
+
+<!--<body>-->
+
+<!--    <div class="landing">-->
+
+<!--        &lt;!&ndash; TEXT CONTENT &ndash;&gt;-->
+<!--        <div class="text-box">-->
+<!--            <h1>NEUROFUSION</h1>-->
+<!--            <p>-->
+<!--                A Federated Hybrid Ensemble Learning Framework <br>-->
+<!--                for EEG-based Harmful Brain Activity Detection-->
+<!--            </p>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; BUTTON &ndash;&gt;-->
+<!--        <button class="dash-btn">Dashboard</button>-->
+
+<!--    </div>-->
+
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeuroFusion Dashboard</title>
+
+<style>
+
+/* === GLOBAL BACKGROUND === */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: url("bg1.png") no-repeat top center;
+  background-size: cover;
+  color: white;
+}
+
+
+/* ============================================================
+   SIDEBAR NAVIGATION — TEXT ONLY (NO LOGO, NO BOX)
+   Positioned EXACTLY inside sidebar area of BG image
+   ============================================================ */
+.sidebar {
+  position: absolute;
+  top: 39%;    /* PERFECT OFFSET under the BG logo */
+  left: 5%;  /* Fits inside sidebar card in BG */
+  width: 29%;  /* Width matches sidebar box in BG */
+}
+
+.menu-item {
+  font-size: 2rem;
+  margin: 2.2vh 0;
+  padding: 1vh 0.8vw;
+  border-radius: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+.menu-item.active {
+  background: linear-gradient(90deg, #7f0dfc, #ff2ac5);
+  opacity: 1;
+}
+
+
+
+/* ============================================================
+   MAIN CONTENT — CENTERED INSIDE PURPLE ARC
+   ============================================================ */
+.main {
+  position: absolute;
+  top: 5%;
+  left: 38%;        /* PERFECT CENTER BASED ON YOUR SCREENSHOT */
+  width: 64%;
+}
+
+.main h1 {
+  font-size: 4rem;
+  margin-bottom: 6vh;
+}
+
+
+
+/* ============================================================
+   INFO BOXES — PERFECT SIZE LIKE IMAGE-2
+   ============================================================ */
+.box-row {
+  display: flex;
+  gap: 2.2vw;
+  margin-top: 1vh;
+}
+
+.info-box {
+  width: 24%;
+  padding: 2.2vh 1.2vw;
+  background: rgba(255,255,255,0.08);
+  border-radius: 1rem;
+  border: 0.1rem solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(1rem);
+}
+
+.info-title {
+  font-size: 1.1rem;
+  opacity: 0.85;
+}
+
+.info-value {
+  font-size: 2.8rem;
+  font-weight: 600;
+  margin-top: 1vh;
+}
+
+
+
+/* ============================================================
+   DATASET BOX — SMALL, LIKE MOCKUP
+   ============================================================ */
+.dataset-box {
+  margin-top: 6vh;
+  width: 48%;    /* Does NOT stretch full width */
+  margin-left: 2vw;
+  background: rgba(255,255,255,0.08);
+  border-radius: 1rem;
+  padding: 2vh 1.5vw;
+  border: 0.1rem solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(1rem);
+}
+
+.dataset-box h2 {
+  margin: 0 0 2vh 0;
+  font-size: 1.7rem;
+}
+
+.dataset-box img {
+  width: 100%;
+  height: 30vh;
+  object-fit: contain;
+  border-radius: 1rem;
+}
+
+</style>
+</head>
+<body>
+
+
+
+
+<!-- ============================================================
+     SIDEBAR (JUST NAVIGATION — NO LOGO)
+     ============================================================ -->
+<div class="sidebar">
+
+  <div class="menu-item active">⭕ Dashboard</div>
+  <div class="menu-item">🔧 Preprocess</div>
+  <div class="menu-item">📈 Predict</div>
+  <div class="menu-item">🧠 FL Status</div>
+  <div class="menu-item">📄 Logs</div>
+    <div class="menu-item">📉 Metrics</div>
+
+
+</div>
+
+
+
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div class="main">
+
+  <h1>Dashboard</h1>
+
+  <div class="box-row">
+
+    <div class="info-box">
+      <div class="info-title">Total EEG Files Uploaded</div>
+      <div class="info-value">106,800</div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title">Models Used</div>
+      <div class="info-value">3</div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title">Last Prediction Accuracy</div>
+      <div class="info-value">—</div>
+    </div>
+
+  </div>
+
+  <div class="dataset-box">
+    <h2>Dataset Overview</h2>
+    <img src="class_distribution.png">
+  </div>
+
+</div>
+
+
+
+
+</body>
+</html>
+
