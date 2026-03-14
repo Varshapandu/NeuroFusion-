@@ -61,7 +61,8 @@ def main():
     
     try:
         logger.info("Creating Flower client instance...")
-        client = FlowerClient()
+        # 📍 Pass client_id to ensure consistency throughout training
+        client = FlowerClient(client_id=f"node_{args.client_id}")
         
         # Use the legacy Flower NumPyClient API (most reliable)
         logger.info("Starting client connection...")

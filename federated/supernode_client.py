@@ -176,25 +176,24 @@ def _local_train_fedprox(
     mu,
     device,
     local_epochs,
+    client_id: str = None,
 ):
     model.train()
     
-    import socket
     import requests
-    node_id = socket.gethostname()
     last_hb = time.time()  # Track heartbeat timing
 
     for epoch in range(local_epochs):
         for batch_idx, batch in enumerate(tqdm(loader, desc="Local Training", leave=False)):
             
-            # 📡 SEND HEARTBEAT EVERY 30 BATCHES (keep alive during training)
+            # 📡 SEND HEARTBEAT EVERY 10 SECONDS (keep alive during training)
             now = time.time()
             if now - last_hb > 10:  # Heartbeat every 10 seconds
                 try:
                     requests.post(
                         "http://127.0.0.1:5000/api/fl/node_heartbeat",
                         json={
-                            "node_id": node_id,
+                            "node_id": client_id or "client",
                             "status": "training"
                         },
                         timeout=2
@@ -304,7 +303,7 @@ def _evaluate_local(model: nn.Module, loader: DataLoader, criterion: nn.Module) 
 # Flower Client
 # ---------------------------
 class FlowerClient(fl.client.NumPyClient):
-    def __init__(self):
+    def __init__(self, client_id: str = None):
         self.model = NeuroFusionNet(num_classes=NUM_CLASSES).to(DEVICE)
         self.trainloader, self.valloader = load_data()
         self.criterion = nn.CrossEntropyLoss()
@@ -316,6 +315,9 @@ class FlowerClient(fl.client.NumPyClient):
         self.sigma = UPDATE_NOISE_MULTIPLIER
         self.local_epochs = LOCAL_EPOCHS
         self.personalization_epochs = PERSONALIZATION_EPOCHS
+        
+        # 📍 Store client ID (passed from start_client.py)
+        self.client_id = client_id or f"node_{int(time.time()) % 1000}"
 
         logger.info("Flower client initialized.")
 
@@ -334,11 +336,11 @@ class FlowerClient(fl.client.NumPyClient):
         # 1) load global params
         # ---- dashboard: mark training ----
         try:
-            import socket, requests
+            import requests
             requests.post(
                 "http://127.0.0.1:5000/api/fl/node_heartbeat",
                 json={
-                    "node_id": socket.gethostname(),
+                    "node_id": self.client_id,
                     "status": "training"
                 },
                 timeout=2
@@ -366,6 +368,7 @@ class FlowerClient(fl.client.NumPyClient):
             mu=self.mu,
             device=DEVICE,
             local_epochs=self.local_epochs,
+            client_id=self.client_id,
         )
 
         # 5) compute local state and privatize update
@@ -379,7 +382,7 @@ class FlowerClient(fl.client.NumPyClient):
         if self.personalization_epochs and self.personalization_epochs > 0:
             logger.info(f"Running personalization: {self.personalization_epochs} epochs (local-only)")
             # personalization uses mu=0 to not pull toward global during local-only fine-tuning
-            _local_train_fedprox(self.model, self.trainloader, self.optimizer, self.criterion, global_state_tensors, mu=0.0, device=DEVICE, local_epochs=self.personalization_epochs)
+            _local_train_fedprox(self.model, self.trainloader, self.optimizer, self.criterion, global_state_tensors, mu=0.0, device=DEVICE, local_epochs=self.personalization_epochs, client_id=self.client_id)
 
         # 8) prepare return values
         num_examples = len(self.trainloader.dataset) if hasattr(self.trainloader.dataset, "__len__") else 0
@@ -402,11 +405,11 @@ class FlowerClient(fl.client.NumPyClient):
 
         # ---- dashboard: back to idle ----
         try:
-            import socket, requests
+            import requests
             requests.post(
                 "http://127.0.0.1:5000/api/fl/node_heartbeat",
                 json={
-                    "node_id": socket.gethostname(),
+                    "node_id": self.client_id,
                     "status": "idle" ,
                     "rounds_completed": 1
                 },
