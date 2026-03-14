@@ -197,20 +197,33 @@ class DashboardFedAvg(fl.server.strategy.FedAvg):
 
         from flwr.common import parameters_to_ndarrays
 
-        # aggregated is (Parameters, metrics)
+        # aggregated is (Parameters, metrics) or (None, metrics) if aggregation failed
         flwr_params = aggregated[0]
+        
+        # Safety check: ensure params are not None
+        if flwr_params is None:
+            logger.warning(f"[ROUND {server_round}] No valid parameters to aggregate")
+            return aggregated
 
         # Convert Flower Parameters → list of numpy arrays
-        params_ndarrays = parameters_to_ndarrays(flwr_params)
+        try:
+            params_ndarrays = parameters_to_ndarrays(flwr_params)
+        except Exception as e:
+            logger.error(f"[Param Conversion Error] {e}")
+            return aggregated
 
         # Load safely into model
-        state_dict = global_model.state_dict()
-        new_state_dict = {}
+        try:
+            state_dict = global_model.state_dict()
+            new_state_dict = {}
 
-        for key, w in zip(state_dict.keys(), params_ndarrays):
-            new_state_dict[key] = torch.tensor(w, device=DEVICE)
+            for key, w in zip(state_dict.keys(), params_ndarrays):
+                new_state_dict[key] = torch.tensor(w, device=DEVICE)
 
-        global_model.load_state_dict(new_state_dict, strict=True)
+            global_model.load_state_dict(new_state_dict, strict=True)
+        except Exception as e:
+            logger.error(f"[Model Load Error] {e}")
+            return aggregated
 
         # Evaluate
         try:
