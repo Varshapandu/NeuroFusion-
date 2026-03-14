@@ -149,6 +149,34 @@ class DashboardFedAvg(fl.server.strategy.FedAvg):
             )
             return None
 
+        # 📊 NOTIFY DASHBOARD ABOUT CONNECTED CLIENTS
+        try:
+            import requests
+            
+            # Extract client info from results and failures
+            connected_clients = []
+            for client, _ in results:
+                client_id = getattr(client, 'cid', f"client_{len(connected_clients)+1}")
+                connected_clients.append({
+                    "node_id": client_id,
+                    "id": client_id,
+                    "status": "training"
+                })
+            
+            # Post connected clients to backend
+            requests.post(
+                "http://127.0.0.1:5000/api/fl/client_sync",
+                json={
+                    "round": server_round,
+                    "connected_clients": connected_clients,
+                    "total_connected": len(connected_clients),
+                    "total_failed": len(failures)
+                },
+                timeout=2
+            )
+        except Exception as e:
+            logger.debug(f"[client_sync] {e}")
+
         self.rounds_completed += 1
         r = self.rounds_completed
         round_time = time.time() - self._round_start_time

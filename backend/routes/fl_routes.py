@@ -605,3 +605,38 @@ def supernode_sync():
         "model_version": version,
         "timestamp": time.time(),
     }), 200
+
+
+# ============================================================
+# CLIENT SYNC — POST /api/fl/client_sync
+# ============================================================
+@fl_bp.route("/client_sync", methods=["POST"])
+def client_sync():
+    """
+    Receive connected client info from FL server.
+    Updates FL_STATE with currently connected clients.
+    """
+    data = request.get_json(silent=True) or {}
+    connected_clients = data.get("connected_clients", [])
+    
+    if not connected_clients:
+        return jsonify({"error": "No clients provided"}), 400
+    
+    with _FL_LOCK:
+        # Update all connected clients in FL_STATE
+        now = time.time()
+        for client in connected_clients:
+            node_id = client.get("node_id") or client.get("id")
+            if node_id:
+                FL_STATE["nodes"][node_id] = {
+                    "id": node_id,
+                    "node_id": node_id,
+                    "status": client.get("status", "training"),
+                    "last_seen": now,
+                    "rounds_completed": FL_STATE["nodes"].get(node_id, {}).get("rounds_completed", 0)
+                }
+    
+    save_state()
+    emit_log(f"[CLIENT SYNC] {len(connected_clients)} clients connected")
+    
+    return jsonify({"ok": True, "count": len(connected_clients)}), 200

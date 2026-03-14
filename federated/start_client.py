@@ -38,6 +38,27 @@ def main():
     print(f"\n📡 Attempting to connect to server...")
     print(f"{'='*60}\n")
     
+    # 📊 Register client with backend
+    try:
+        import requests
+        socket_hostname = os.getenv("HOSTNAME") or "localhost"
+        
+        requests.post(
+            "http://127.0.0.1:5000/api/fl/node_heartbeat",
+            json={
+                "node_id": f"node_{args.client_id}",
+                "id": f"node_{args.client_id}",
+                "status": "online",
+                "ip": socket_hostname,
+                "rounds_completed": 0,
+                "meta": {"platform": sys.platform}
+            },
+            timeout=2
+        )
+        print(f"✅ Registered with backend as node_{args.client_id}")
+    except Exception as e:
+        logger.warning(f"Could not register with backend: {e}")
+    
     try:
         logger.info("Creating Flower client instance...")
         client = FlowerClient()
