@@ -254,7 +254,25 @@ def evaluate_global_model(model, test_loader, device):
 # ===========================================================
 # SERVER ENTRY
 # ===========================================================
-def start_fl_server():
+def start_fl_server(num_rounds=None, server_address=None):
+    """
+    Start the Flower FL server.
+    
+    Args:
+        num_rounds (int, optional): Number of training rounds. Defaults to config value.
+        server_address (str, optional): Server address. Defaults to config value.
+    """
+    # Use provided values or fall back to config
+    rounds = num_rounds if num_rounds is not None else NUM_ROUNDS
+    addr = server_address if server_address is not None else FLOWER_SERVER_ADDRESS
+    
+    print(f"\n{'='*60}")
+    print(f"📊 Server Configuration:")
+    print(f"  Rounds: {rounds}")
+    print(f"  Address: {addr}")
+    print(f"  Clients per round: {CLIENTS_PER_ROUND}")
+    print(f"{'='*60}\n")
+    
     # strategy = DashboardFedAvg(
     #     fraction_fit=CLIENTS_PER_ROUND / TOTAL_CLIENTS,
     #     min_fit_clients=CLIENTS_PER_ROUND,
@@ -273,8 +291,8 @@ def start_fl_server():
     )
 
     fl.server.start_server(
-        server_address=FLOWER_SERVER_ADDRESS,
-        config=fl.server.ServerConfig(num_rounds=NUM_ROUNDS),
+        server_address=addr,
+        config=fl.server.ServerConfig(num_rounds=rounds),
         strategy=strategy,
     )
 

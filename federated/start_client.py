@@ -39,15 +39,33 @@ def main():
     print(f"{'='*60}\n")
     
     try:
+        logger.info("Creating Flower client instance...")
         client = FlowerClient()
-        fl.client.start_numpy_client(
+        
+        # Use the new Flower client API (not deprecated)
+        logger.info("Starting client connection...")
+        fl.client.start_client(
             server_address=args.server_address,
-            client=client
+            client=client.to_client()  # Convert to new Flower ClientFN interface
         )
+        logger.info("✅ Client connected successfully")
+        
     except ConnectionRefusedError:
         logger.error(f"❌ Failed to connect to server at {args.server_address}")
         logger.error("Make sure the server is running and the address is correct.")
         sys.exit(1)
+    except AttributeError:
+        # Fallback: If to_client() not available, use legacy method
+        logger.warning("⚠️  Using legacy start_numpy_client method...")
+        try:
+            client = FlowerClient()
+            fl.client.start_numpy_client(
+                server_address=args.server_address,
+                client=client
+            )
+        except Exception as e:
+            logger.error(f"❌ Client error: {e}")
+            sys.exit(1)
     except Exception as e:
         logger.error(f"❌ Client error: {e}")
         sys.exit(1)
