@@ -22,18 +22,18 @@ BATCH_SIZE = int(os.environ.get("BATCH_SIZE", 32))
 NUM_CLASSES = 6
 
 # Optimizer
-LR = float(os.environ.get("LR", 1e-4))
+LR = float(os.environ.get("LR", 1e-3))  # ✅ Increased from 1e-4 to 1e-3
 
 # Federated settings
-NUM_ROUNDS = int(os.environ.get("NUM_ROUNDS", 3))
+NUM_ROUNDS = int(os.environ.get("NUM_ROUNDS", 30))  # ✅ Increased from 3 to 30 rounds
 CLIENTS_PER_ROUND = int(os.environ.get("CLIENTS_PER_ROUND", 2))  # ✅ Changed to 2
 TOTAL_CLIENTS = int(os.environ.get("TOTAL_CLIENTS", 2))           # ✅ Changed to 2
 
 # FedProx + Update-level DP defaults (tunable)
 FEDPROX_MU = float(os.environ.get("FEDPROX_MU", 1e-3))
 UPDATE_CLIP_NORM = float(os.environ.get("UPDATE_CLIP_NORM", 1.0))
-UPDATE_NOISE_MULTIPLIER = float(os.environ.get("UPDATE_NOISE_MULTIPLIER", 0.5))
-LOCAL_EPOCHS = int(os.environ.get("LOCAL_EPOCHS", 1))
+UPDATE_NOISE_MULTIPLIER = float(os.environ.get("UPDATE_NOISE_MULTIPLIER", 0.0))  # ✅ Disabled DP noise for initial training
+LOCAL_EPOCHS = int(os.environ.get("LOCAL_EPOCHS", 5))  # ✅ Increased from 1 to 5
 PERSONALIZATION_EPOCHS = int(os.environ.get("PERSONALIZATION_EPOCHS", 0))
 
 # For legacy/compat: previous Opacus variables mapped if present
